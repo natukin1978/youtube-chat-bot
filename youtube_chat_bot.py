@@ -1,5 +1,6 @@
 import asyncio
 import json
+import logging
 import os
 import sys
 
@@ -16,6 +17,9 @@ from websocket_helper import websocket_listen_forever
 from youtube_bot import YoutubeBot
 
 g.config = readConfig()
+
+# ロガーの設定
+logging.basicConfig(level=logging.INFO)
 
 g.map_is_first_on_stream = {}
 g.one_comme_users = OneCommeUsers.read_one_comme_users()
