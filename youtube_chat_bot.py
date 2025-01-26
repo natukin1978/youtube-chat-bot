@@ -16,6 +16,8 @@ from text_helper import readText
 from websocket_helper import websocket_listen_forever
 from youtube_bot import YoutubeBot
 
+g.ADDITIONAL_REQUESTS_PROMPT = readText("prompts/additional_requests_prompt.txt")
+
 g.config = readConfig()
 
 # ロガーの設定
