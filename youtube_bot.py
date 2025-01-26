@@ -2,6 +2,7 @@ import asyncio
 import datetime
 import logging
 import pickle
+import os
 
 from googleapiclient.discovery import build
 
@@ -45,9 +46,6 @@ class YoutubeBot:
 
     async def on_message(self, items):
         for item in items:
-            snippet = item["snippet"]
-            author = item["authorDetails"]
-            answerLevel = 16  # 1/6くらいの確率
             json_data = create_message_json(item)
 
             id = json_data["id"]
@@ -55,11 +53,7 @@ class YoutubeBot:
                 # 無視するID
                 return
 
-            # response_text = self.genai_chat.send_message_by_json_with_buf(json_data) ###
-            # if response_text and is_hit_by_message_json(answerLevel, json_data):
-            #    await self.twitchio_client.get_channel( ###
-            #        g.config["twitch"]["loginChannel"]
-            #    ).send(response_text)
+            answerLevel = 16  # 1/6くらいの確率
             needs_response = is_hit_by_message_json(answerLevel, json_data)
             await Fuyuka.send_message_by_json_with_buf(json_data, needs_response)
 
