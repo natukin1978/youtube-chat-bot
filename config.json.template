@@ -1,7 +1,7 @@
 {
   "youtube": {
     "apiKey": "",
-    "chatPollingIntervalSec": 5
+    "chatPollingIntervalSec": 10
   },
   "fuyukaApi": {
     "baseUrl": "ws://127.0.0.1:38321"
