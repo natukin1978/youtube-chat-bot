@@ -14,6 +14,7 @@ def create_message_json(item=None) -> dict[str, any]:
         "content": None,
         "isFirst": False,
         "isFirstOnStream": None,  # すぐ下で設定する
+        "noisy": False,
         "additionalRequests": None,
     }
     if item:
