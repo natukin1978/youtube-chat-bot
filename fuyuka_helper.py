@@ -16,4 +16,6 @@ class Fuyuka:
     async def send_message_by_json_with_buf(
         json_data: dict[str, any], needs_response: bool
     ) -> None:
+        if needs_response:
+            g.set_needs_response.add(json_data["dateTime"])
         await Fuyuka.send_message_by_json(json_data)

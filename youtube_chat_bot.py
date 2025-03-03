@@ -30,7 +30,7 @@ logging.basicConfig(level=logging.INFO)
 g.map_is_first_on_stream = {}
 g.one_comme_users = OneCommeUsers.read_one_comme_users()
 g.set_exclude_id = read_text_set("exclude_id.txt")
-# g.set_needs_response = set()
+g.set_needs_response = set()
 g.websocket_fuyuka = None
 
 
@@ -41,11 +41,32 @@ async def main():
             return ""
         return conf_fa["baseUrl"]
 
+    # 注意. 判定フラグを削除するため、受信ハンドラでこの関数を複数回呼んではいけない
+    def is_needs_response(json_data: dict[str, any]) -> bool:
+        if "youtube_chat_bot" in json_data["id"]:
+            return True
+
+        request_dateTime = json_data["request"]["dateTime"]
+        if request_dateTime not in g.set_needs_response:
+            return False
+
+        g.set_needs_response.discard(request_dateTime)
+        return True
+
     def set_ws_fuyuka(ws) -> None:
         g.websocket_fuyuka = ws
 
     async def recv_fuyuka_response(message: str) -> None:
-        return
+        try:
+            json_data = json.loads(message)
+            if not is_needs_response(json_data):
+                return
+            response_text = json_data["response"]
+            if not response_text:
+                return
+            bot.post_chat_message(response_text)
+        except json.JSONDecodeError:
+            pass
 
     bot = YoutubeBot()
 
