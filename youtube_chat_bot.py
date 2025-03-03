@@ -9,23 +9,27 @@ import websockets
 import global_value as g
 
 g.app_name = "youtube_chat_bot"
+g.base_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 
-from config_helper import readConfig
+from config_helper import read_config
 from one_comme_users import OneCommeUsers
-from text_helper import readText
+from text_helper import read_text, read_text_set
 from websocket_helper import websocket_listen_forever
 from youtube_bot import YoutubeBot
 
-g.ADDITIONAL_REQUESTS_PROMPT = readText("prompts/additional_requests_prompt.txt")
+print("前回の続きですか？(y/n) ", end="")
+is_continue = input() == "y"
 
-g.config = readConfig()
+g.ADDITIONAL_REQUESTS_PROMPT = read_text("prompts/additional_requests_prompt.txt")
+
+g.config = read_config()
 
 # ロガーの設定
 logging.basicConfig(level=logging.INFO)
 
 g.map_is_first_on_stream = {}
 g.one_comme_users = OneCommeUsers.read_one_comme_users()
-g.set_exclude_id = set(readText("exclude_id.txt").splitlines())
+g.set_exclude_id = read_text_set("exclude_id.txt")
 # g.set_needs_response = set()
 g.websocket_fuyuka = None
 
@@ -45,8 +49,6 @@ async def main():
 
     bot = YoutubeBot()
 
-    print("前回の続きですか？(y/n) ", end="")
-    is_continue = input() == "y"
     if (
         is_continue
         and OneCommeUsers.load_is_first_on_stream()
