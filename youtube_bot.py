@@ -53,7 +53,7 @@ class YoutubeBot:
                 # 無視するID
                 return
 
-            answerLevel = 16  # 1/6くらいの確率
+            answerLevel = g.config["fuyukaApi"]["answerLevel"]
             needs_response = is_hit_by_message_json(answerLevel, json_data)
             await Fuyuka.send_message_by_json_with_buf(json_data, needs_response)
 
