@@ -1,8 +1,8 @@
 import asyncio
 import datetime
 import logging
-import pickle
 import os
+import pickle
 
 from googleapiclient.discovery import build
 
@@ -101,6 +101,21 @@ class YoutubeBot:
             logger.error("Chat message task cancelled.")
         except Exception as e:
             logger.error(f"Chat message get error:{e}")
+
+    def post_chat_message(self, message):
+        """ライブチャットにコメントを投稿する"""
+        request = self.youtube.liveChatMessages().insert(
+            part="snippet",
+            body=dict(
+                snippet=dict(
+                    liveChatId=self.live_chat_id,
+                    type="textMessageEvent",
+                    textMessageDetails=dict(messageText=message),
+                )
+            ),
+        )
+        response = request.execute()
+        return response
 
     async def run(self):
         self.live_chat_id = await self.get_live_chat_id()
