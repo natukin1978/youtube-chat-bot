@@ -11,7 +11,7 @@ from cache_helper import get_cache_filepath
 from fuyuka_helper import Fuyuka
 from one_comme_users import OneCommeUsers
 from random_helper import is_hit_by_message_json
-from youtube_message_helper import create_message_json
+from youtube_message_helper import create_message_json_from_youtube_item
 
 logger = logging.getLogger(__name__)
 
@@ -46,15 +46,17 @@ class YoutubeBot:
 
     async def on_message(self, items):
         for item in items:
-            json_data = create_message_json(item)
+            json_data = create_message_json_from_youtube_item(item)
 
             id = json_data["id"]
             if id in g.set_exclude_id:
                 # 無視するID
                 return
 
-            answerLevel = g.config["fuyukaApi"]["answerLevel"]
-            needs_response = is_hit_by_message_json(answerLevel, json_data)
+            answer_level = g.config["fuyukaApi"]["answerLevel"]
+            answer_length = g.config["fuyukaApi"]["answerLength"]["default"]
+            needs_response = is_hit_by_message_json(answer_level, json_data)
+            OneCommeUsers.update_additional_requests(json_data, answer_length)
             await Fuyuka.send_message_by_json_with_buf(json_data, needs_response)
 
     async def get_live_chat_id(self):
