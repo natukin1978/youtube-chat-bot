@@ -1,10 +1,7 @@
 import asyncio
-import json
 import logging
 import os
 import sys
-
-import websockets
 
 import global_value as g
 
