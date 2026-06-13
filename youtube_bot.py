@@ -52,6 +52,7 @@ class YoutubeBot:
                 # 無視するID
                 return
 
+            logger.info(item)
             answer_level = g.config["fuyukaApi"]["answerLevel"]
             answer_length = g.config["fuyukaApi"]["answerLength"]["default"]
             needs_response = is_hit_by_message_json(answer_level, json_data)
