@@ -1,6 +1,9 @@
 import json
+import logging
 
 import global_value as g
+
+logger = logging.getLogger(__name__)
 
 
 class Fuyuka:
