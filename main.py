@@ -1,36 +1,44 @@
 import asyncio
-import json
 import logging
 import os
 import sys
 
-import websockets
-
 import global_value as g
+from config_helper import read_config
+from input_helper import input_with_timeout
+from logging_setup import setup_app_logging
 
 g.app_name = "youtube_chat_bot"
 g.base_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 
-from config_helper import read_config
+res = input_with_timeout("前回の続きですか？(y/n) [10秒以内に未入力なら 'n']: ", timeout=10)
+is_continue = (res == "y")
+
+g.config = read_config()
+
+# ロガーの設定
+setup_app_logging(g.config["logLevel"], log_file_path=f"{g.app_name}.log")
+logger = logging.getLogger(__name__)
+
 from one_comme_users import OneCommeUsers
 from text_helper import read_text, read_text_set
 from websocket_helper import websocket_listen_forever
 from youtube_bot import YoutubeBot
 
-print("前回の続きですか？(y/n) ", end="")
-is_continue = input() == "y"
-
 g.ADDITIONAL_REQUESTS_PROMPT = read_text("prompts/additional_requests_prompt.txt")
-
-g.config = read_config()
-
-# ロガーの設定
-logging.basicConfig(filename=f"{g.app_name}.log", encoding="utf-8", level=logging.INFO)
 
 g.map_is_first_on_stream = {}
 g.set_exclude_id = read_text_set("exclude_id.txt")
 g.websocket_fuyuka = None
 
+bot = YoutubeBot()
+
+if (
+    is_continue
+    and OneCommeUsers.load_is_first_on_stream()
+    and bot.load_live_video_id()
+):
+    print("挨拶キャッシュを復元しました。")
 
 async def main():
     def get_fuyukaApi_baseUrl() -> str:
@@ -44,15 +52,6 @@ async def main():
 
     async def recv_fuyuka_response(message: str) -> None:
         return
-
-    bot = YoutubeBot()
-
-    if (
-        is_continue
-        and OneCommeUsers.load_is_first_on_stream()
-        and bot.load_live_video_id()
-    ):
-        print("挨拶キャッシュを復元しました。")
 
     live_video_id = bot.get_live_video_id()
     if not live_video_id:
@@ -82,4 +81,9 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        pass
+    finally:
+        pass
